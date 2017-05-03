@@ -1,6 +1,6 @@
 /* 
- * Project path: C:\Users\nyc-PC\Documents\Workspace\web_crawler_t
- * Run this file cmd: node crawler_emag.js 
+ * Project path: C:\Users\nyc-PC\Documents\GitHub\crawler
+ * Run this file cmd: node crawler_main.js || node task_handler.js 
  */
 
 // Request library is used to make HTTP requests
@@ -18,17 +18,18 @@ var config = require('./config.json');
 
 var URLs;
 
+// Global variable used for write into a file log - can be made local var in the future
 var logger;
 
 /**
  * This is the main function of this file
  */
 function crawl() {
-    print_to_console_and_logfile("d", "G", "crawl function");
+    print_to_console_and_logfile('i', 'g', 'crawl function passed');
 }
 
 /**
- * This function will be used to print logs into console or/and in ./log/Log_crawler_
+ * This function will be used to print logs into console or/and in crawler_main.log
  * @param {*Log type} log_type 
  * @param {*The web page used} page 
  * @param {*The message which will be shown} message 
@@ -40,40 +41,52 @@ function print_to_console_and_logfile(log_type, page, message) {
         logger = new(winston.Logger)({
             transports: [
                 new(winston.transports.Console)(),
-                new(winston.transports.File)({ filename: 'log_crawler.log' })
+                new(winston.transports.File)({ filename: "crawler_main.log" })
             ]
         });
     }
 
     switch (page) {
         case "emag":
-            message = "EMAG | " + message;
+            message = 'EMAG | ' + message;
             break;
         case "pcgarage":
-            message = "PC-GARAGE | " + message;
+            message = 'PC-GARAGE | ' + message;
             break;
-        case "G":
+        case "g":
         default:
-            message = "GENERAL | " + message;
+            message = 'GENERAL | ' + message;
             break;
     }
 
     switch (log_type) {
         case "e":
-            logger.log("error", message);
+            logger.error(message);
             break;
         case "i":
-            logger.log("info", message);
+            logger.info(message);
             break;
-        case "d":
-            logger.log("debug", message);
+            /*case "d":
+                logger.debug(message);
+                break;*/
+            //I don't know the reason, but this doesn't work
+            /*case "v":
+                logger.verbose(message);
+                break;*/
+            //I don't know the reason, but this doesn't work
+        case "w":
+            logger.warn(message);
             break;
+            /*case "s":
+                logger.silly(message);
+                break;*/
+            //I don't know the reason, but this doesn't work
         default:
-            logger.log("error in log function", "incorrect printing to the log file");
+            logger.error("Error in log function | Incorrect printing to the log file");
             break;
     }
 
-    //console.log(message);
+    console.log(message);
 }
 
 /**
