@@ -1,0 +1,26 @@
+{
+    "options": {
+        "scrapHour": "00:00"
+    },
+    "sites": [{
+        "name": "emag.ro",
+        "url": "http://www.emag.ro",
+        "functions": "./hosts/emag/functions.js",
+        "map": {
+            "video-cards": {
+                "url": "placi_video/c",
+                "class": "Componente PC",
+                "subclass": "Placi Video",
+                "class_id": "computer_parts",
+                "subclass_id": "video_cards"
+            },
+            "tablets": {
+                "url": "tablete/c",
+                "class": "Portabile",
+                "subclass": "Tablete",
+                "class_id": "portables",
+                "subclass_id": "tablets"
+            }
+        }
+    }]
+}
