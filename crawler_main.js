@@ -37,10 +37,10 @@ function print_to_console_and_logfile(log_type, page, message) {
     //If the logger is not instantiated then a new one will be created
     if (logger === undefined) {
         // By default, only the Console transport is set on the default logger. 
-        var logger = new(winston.Logger)({
+        logger = new(winston.Logger)({
             transports: [
-                /*new(winston.transports.Console)(),*/
-                new(winston.transports.File)({ filename: 'LOG_crawler.log' })
+                new(winston.transports.Console)(),
+                new(winston.transports.File)({ filename: 'log_crawler.log' })
             ]
         });
     }
