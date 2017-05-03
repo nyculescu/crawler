@@ -3,24 +3,46 @@
         "scrapHour": "00:00"
     },
     "sites": [{
-        "name": "emag.ro",
-        "url": "http://www.emag.ro",
-        "functions": "./hosts/emag/functions.js",
-        "map": {
-            "video-cards": {
-                "url": "placi_video/c",
-                "class": "Componente PC",
-                "subclass": "Placi Video",
-                "class_id": "computer_parts",
-                "subclass_id": "video_cards"
-            },
-            "tablets": {
-                "url": "tablete/c",
-                "class": "Portabile",
-                "subclass": "Tablete",
-                "class_id": "portables",
-                "subclass_id": "tablets"
+            "name": "emag",
+            "url": "http://www.emag.ro",
+            "functions": "./hosts/emag/functions.js",
+            "map": {
+                "televizoare": {
+                    "url": "televizoare/stoc",
+                    "first-page-format": "/c",
+                    "second-page-format": "/p2/c",
+                    "html-id-to-watch": "pret2",
+                    "html-classes-to watch": "top | produs-listing-price-box | pret-produs-listing | price-over | money-int"
+                },
+                "laptopuri": {
+                    "url": "laptopuri/stoc",
+                    "first-page-format": "/c",
+                    "second-page-format": "/p2/c",
+                    "html-div-id-to-watch": "pret2",
+                    "html-classes-to watch": "top | produs-listing-price-box | pret-produs-listing | price-over | money-int"
+                }
+            }
+        },
+        {
+            "name": "pc-garage",
+            "url": "http://www.pcgarage.ro",
+            "functions": "./hosts/pcgarage/functions.js",
+            "map": {
+                "ultrabook": {
+                    "url": "ultrabook/",
+                    "first-page-format": "/",
+                    "second-page-format": "/pagina2",
+                    "html-div-id-to-watch": "listing-right",
+                    "html-classes-to watch": "grid-products clearfix product-list-container | product-box-container | product-box | pb-price-container | pb-price | price"
+                },
+                "notebook-laptop-2-in-1": {
+                    "url": "notebook-laptop-2-in-1/",
+                    "first-page-format": "/",
+                    "second-page-format": "/pagina2",
+                    "html-div-id-to-watch": "listing-right",
+                    "html-classes-to watch": "grid-products clearfix product-list-container | product-box-container | product-box | pb-price-container | pb-price | price"
+                }
             }
         }
-    }]
+    ]
 }
