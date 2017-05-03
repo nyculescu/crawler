@@ -25,7 +25,7 @@ var logger;
  * This is the main function of this file
  */
 function crawl() {
-    print_to_console_and_logfile('i', 'g', 'crawl function passed');
+    //print_to_console_and_logfile('i', 'g', 'crawl function passed');
 }
 
 /**
