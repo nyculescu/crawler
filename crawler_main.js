@@ -1,11 +1,14 @@
 /* 
  * Project path: C:\Users\nyc-PC\Documents\GitHub\crawler
  * Run this file cmd: node crawler_main.js || node task_handler.js 
+ * 
  */
 
 // Flag for system initialization
-var isCrawlInitiated = false;
+//var isCrawlInitiated = false;
 
+// Delay a promise a specified amount of time
+var delay = require('delay');
 // Request library is used to make HTTP requests
 var request = require('request');
 // Cheerio library is used to parse and select HTML elements on the page
@@ -22,62 +25,85 @@ var config = require('./config.json');
 var logger;
 
 //--------------------------------------------------------------
-// Array with URLs wanted to be accessed. - not really needed
-var URLs = [];
-var START_URL = 'www.emag.ro';
-// To keep track of which pages we've visited (so we don't visit them more than once) we used 
-// pagesVisited and added the URL to that set when we visited it.
-// In the Java version of the web crawler we used a Set<String> (specifically a HashSet<String>)
-var pagesVisited = {};
-//var numPagesVisited = 0;
-// We'll need a place to put all the links that we find on every page, so we'll use pagesToVisit
-var pagesToVisit = [];
-var url = new URL(START_URL);
-var baseUrl = url.protocol + "//" + url.hostname;
-//pagesToVisit.push(START_URL);
+// After the connection with a webpage is established we will download its bosy to this var
+var webpage_body;
 //--------------------------------------------------------------
 
 /**
  * This is the main function of this file
  */
 function crawl() {
-    if (!isCrawlInitiated) {
-        //First of all, let's get all the sites needed to crawl
-        for (i = 0; i < config.sites.length; i++) {
-            URLs[i] = config.sites[i].url;
-        }
-        isCrawlInitiated = true;
-    }
+    var reconnect_attempts = 5;
 
-    crawl_emag(crawl);
-    crawl_pcgarage(crawl);
+    if (config !== undefined || config.sites !== undefined) {
+        for (i = 0; i < config.sites.length; i++) {
+            //clear content every new webpage connection
+            webpage_body = undefined;
+
+            crawl__establish_connection((reconnect_attempts - 1), config.sites[i].url);
+            if (webpage_body !== undefined) {
+                switch (i) {
+                    case 0:
+                        crawl__parse_emag(webpage_body);
+                        break;
+                    case 1:
+                        crawl__parse_pcgarage(webpage_body);
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                // crawl__establish_connection() will write into the log and if something went wrong out there,
+                // webpage_body will be undefined so, here is nothing to do
+            }
+        }
+    } else {
+        log__to_console_and_file('e', 'g', 'Error in config.jason file');
+    }
+}
+
+/**
+ * Function used for establishing the connection between webpages from config.json and this application
+ * reconnect_attempts should be grater or equal to 0 !
+ */
+function crawl__establish_connection(reconnect_attempts, Url) {
+    // Array with URLs wanted to be accessed. - not really needed
+    var url = new URL(Url);
+    var baseUrl = url.protocol + "//" + url.hostname;
+
+    request(baseUrl, function(error, response, body) {
+        // Check status code (200 is HTTP OK)
+        // Read about status code: https://www.addedbytes.com/articles/for-beginners/http-status-codes/
+        if (reconnect_attempts >= 0 && (response === undefined || response.statusCode !== 200)) {
+            delay(1000)
+                .then(() => {
+                    // Executed after 1000 milliseconds
+                    log__to_console_and_file('e', '', 'Attempt to reconnect to ' + baseUrl);
+                    crawl__establish_connection(--reconnect_attempts, Url);
+                });
+        } else if (reconnect_attempts < 0 && (response === undefined || response.statusCode !== 200)) {
+            log__to_console_and_file('e', '', 'Failed to connect to ' + baseUrl);
+        } else if (response !== undefined && response.statusCode === 200) {
+            log__to_console_and_file('i', '', 'status code: ' + response.statusCode + ' on ' + baseUrl);
+            webpage_body = body;
+        }
+    });
 }
 
 /**
  * Specific function for www.emag.ro crawling
  */
-function crawl_emag(callback) {
-
-    request( /*URLs[0]*/ "www.google.ro", function(error, response, body) {
-        // Check status code (200 is HTTP OK)
-        // Read about status code: https://www.addedbytes.com/articles/for-beginners/http-status-codes/
-
-        if (response === undefined || response.statusCode !== 200) { // www.emag.ro returns 500
-            callback();
-            return;
-        }
-
-        // Parse the document body
-        var $ = cheerio.load(body);
-        //$('#fruits').children('.pear').text();
-    });
+function crawl__parse_emag(body) {
+    // www.emag.ro returns 500 for some reason
 }
 
 /**
  * Specific function for www.pcgarage.ro crawling
  */
-function crawl_pcgarage(callback) {
-
+function crawl__parse_pcgarage(body) {
+    // Parse the document body
+    var $ = cheerio.load(body);
+    //$('#fruits').children('.pear').text();
 }
 
 /**
@@ -86,7 +112,7 @@ function crawl_pcgarage(callback) {
  * @param {*The web page used} page 
  * @param {*The message which will be shown} message 
  */
-function print_to_console_and_logfile(log_type, page, message) {
+function log__to_console_and_file(log_type, page, message) {
     //If the logger is not instantiated then a new one will be created
     if (logger === undefined) {
         // By default, only the Console transport is set on the default logger. 
@@ -138,7 +164,7 @@ function print_to_console_and_logfile(log_type, page, message) {
             break;
     }
 
-    console.log(message);
+    //console.log(message);
 }
 
 /**
