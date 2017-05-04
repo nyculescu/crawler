@@ -26,7 +26,7 @@ var logger;
 
 //--------------------------------------------------------------
 // After the connection with a webpage is established we will download its bosy to this var
-var webpage_body;
+//var webpage_body;
 //--------------------------------------------------------------
 
 /**
@@ -37,25 +37,7 @@ function crawl() {
 
     if (config !== undefined || config.sites !== undefined) {
         for (i = 0; i < config.sites.length; i++) {
-            //clear content every new webpage connection
-            webpage_body = undefined;
-
-            crawl__establish_connection((reconnect_attempts - 1), config.sites[i].url);
-            if (webpage_body !== undefined) {
-                switch (i) {
-                    case 0:
-                        crawl__parse_emag(webpage_body);
-                        break;
-                    case 1:
-                        crawl__parse_pcgarage(webpage_body);
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                // crawl__establish_connection() will write into the log and if something went wrong out there,
-                // webpage_body will be undefined so, here is nothing to do
-            }
+            crawl__establish_connection_then_parse((reconnect_attempts - 1), i);
         }
     } else {
         log__to_console_and_file('e', 'g', 'Error in config.jason file');
@@ -66,9 +48,9 @@ function crawl() {
  * Function used for establishing the connection between webpages from config.json and this application
  * reconnect_attempts should be grater or equal to 0 !
  */
-function crawl__establish_connection(reconnect_attempts, Url) {
+function crawl__establish_connection_then_parse(reconnect_attempts, url_no) {
     // Array with URLs wanted to be accessed. - not really needed
-    var url = new URL(Url);
+    var url = new URL(config.sites[url_no].url);
     var baseUrl = url.protocol + "//" + url.hostname;
 
     request(baseUrl, function(error, response, body) {
@@ -79,13 +61,23 @@ function crawl__establish_connection(reconnect_attempts, Url) {
                 .then(() => {
                     // Executed after 1000 milliseconds
                     log__to_console_and_file('e', '', 'Attempt to reconnect to ' + baseUrl);
-                    crawl__establish_connection(--reconnect_attempts, Url);
+                    crawl__establish_connection_then_parse(--reconnect_attempts, url_no);
                 });
         } else if (reconnect_attempts < 0 && (response === undefined || response.statusCode !== 200)) {
             log__to_console_and_file('e', '', 'Failed to connect to ' + baseUrl);
         } else if (response !== undefined && response.statusCode === 200) {
             log__to_console_and_file('i', '', 'status code: ' + response.statusCode + ' on ' + baseUrl);
-            webpage_body = body;
+            // Now that the connection is established, we'll parse the webpage's body
+            switch (url.host) {
+                case 'www.emag.ro':
+                    crawl__parse_emag(body);
+                    break;
+                case 'www.pcgarage.ro':
+                    crawl__parse_pcgarage(body);
+                    break;
+                default:
+                    break;
+            }
         }
     });
 }
