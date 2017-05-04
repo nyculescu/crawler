@@ -74,6 +74,8 @@ function crawl__establish_connection_then_parse(reconnect_attempts, url_no) {
                     break;
                 case 'www.pcgarage.ro':
                     crawl__parse_pcgarage(body);
+                    // after parsing the webpage, data shall be added to a database 
+                    // @todo mongodb implementation
                     break;
                 default:
                     break;
@@ -87,14 +89,29 @@ function crawl__establish_connection_then_parse(reconnect_attempts, url_no) {
  */
 function crawl__parse_emag(body) {
     // www.emag.ro returns 500 for some reason
+    // @todo To be investigated
 }
 
 /**
  * Specific function for www.pcgarage.ro crawling
+ * This function will parse the content of www.pcgarage.ro and crawl for specific objects
+ * We will use config.json to know for what are we looking for
+ * To parse the content we will use XPath & Cheerio
  */
 function crawl__parse_pcgarage(body) {
     // Parse the document body
     var $ = cheerio.load(body);
+
+    /**
+     * Search for the product title and its reference
+     * //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[1]/a
+     */
+
+    /**
+     * Search for the price
+     * //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[3]/div[1]/p
+     */
+
     //$('#fruits').children('.pear').text();
 }
 
