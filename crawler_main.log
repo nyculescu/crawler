@@ -54,3 +54,10 @@
 {"level":"error","message":"GENERAL | Attempt to reconnect to http://www.emag.ro","timestamp":"2017-05-04T20:33:02.747Z"}
 {"level":"error","message":"GENERAL | Attempt to reconnect to http://www.emag.ro","timestamp":"2017-05-04T20:33:03.867Z"}
 {"level":"error","message":"GENERAL | Failed to connect to http://www.emag.ro","timestamp":"2017-05-04T20:33:03.993Z"}
+{"level":"info","message":"GENERAL | status code: 200 on http://www.pcgarage.ro","timestamp":"2017-05-04T20:50:10.617Z"}
+{"level":"error","message":"GENERAL | Attempt to reconnect to http://www.emag.ro","timestamp":"2017-05-04T20:50:10.961Z"}
+{"level":"error","message":"GENERAL | Attempt to reconnect to http://www.emag.ro","timestamp":"2017-05-04T20:50:12.080Z"}
+{"level":"error","message":"GENERAL | Attempt to reconnect to http://www.emag.ro","timestamp":"2017-05-04T20:50:13.200Z"}
+{"level":"error","message":"GENERAL | Attempt to reconnect to http://www.emag.ro","timestamp":"2017-05-04T20:50:14.321Z"}
+{"level":"error","message":"GENERAL | Attempt to reconnect to http://www.emag.ro","timestamp":"2017-05-04T20:50:15.450Z"}
+{"level":"error","message":"GENERAL | Failed to connect to http://www.emag.ro","timestamp":"2017-05-04T20:50:15.581Z"}
