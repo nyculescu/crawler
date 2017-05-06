@@ -1,9 +1,9 @@
 {
-    "name": "web_crawler",
-    "version": "0.0.1",
-    "description": "A simple webcrawler written in JavaScript",
+    "name": "webcrawler",
+    "version": "0.1.0",
+    "description": "Webcrawler written in JavaScript",
     "main": "crawler.js",
-    "author": "Nyculescu",
+    "author": "NyC",
     "license": "ISC",
     "dependencies": {
         "cheerio": "latest",
@@ -12,6 +12,7 @@
         "winston": "latest",
         "repeat": "latest",
         "parse-json": "latest",
-        "delay": "latest"
+        "delay": "latest",
+        "axios": "latest"
     }
 }

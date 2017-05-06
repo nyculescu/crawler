@@ -1,48 +1,29 @@
 {
-    "options": {
-        "scrapHour": "00:00"
-    },
     "sites": [{
-            "name": "emag",
-            "url": "http://www.emag.ro",
-            "functions": "./hosts/emag/functions.js",
-            "map": {
-                "televizoare": {
-                    "url": "televizoare/stoc",
-                    "first-page-format": "/c",
-                    "second-page-format": "/p2/c",
-                    "html-id-to-watch": "pret2",
-                    "html-classes-to watch": "top | produs-listing-price-box | pret-produs-listing | price-over | money-int"
-                },
-                "laptopuri": {
-                    "url": "laptopuri/stoc",
-                    "first-page-format": "/c",
-                    "second-page-format": "/p2/c",
-                    "html-div-id-to-watch": "pret2",
-                    "html-classes-to watch": "top | produs-listing-price-box | pret-produs-listing | price-over | money-int"
-                }
+        "name": "pc_garage",
+        "url": "http://www.pcgarage.ro",
+        "functions": "./hosts/pcgarage/functions.js",
+        "map": [{
+                "name": "Smartphone",
+                "url": "/smartphone",
+                "first_page_format": "/",
+                "second_page_format": "/pagina2",
+                "html_div_id_to_watch": "listing_right"
+            },
+            {
+                "name": "Ultrabook",
+                "url": "/ultrabook",
+                "first_page_format": "/",
+                "second_page_format": "/pagina2",
+                "html_div_id_to_watch": "listing_right"
+            },
+            {
+                "name": "notebook_laptop_2_in_1",
+                "url": "/notebook_laptop_2_in_1",
+                "first_page_format": "/",
+                "second_page_format": "/pagina2",
+                "html_div_id_to_watch": "listing_right"
             }
-        },
-        {
-            "name": "pc-garage",
-            "url": "http://www.pcgarage.ro",
-            "functions": "./hosts/pcgarage/functions.js",
-            "map": {
-                "ultrabook": {
-                    "url": "ultrabook/",
-                    "first-page-format": "/",
-                    "second-page-format": "/pagina2",
-                    "html-div-id-to-watch": "listing-right",
-                    "html-classes-to watch": "grid-products clearfix product-list-container | product-box-container | product-box | pb-price-container | pb-price | price"
-                },
-                "notebook-laptop-2-in-1": {
-                    "url": "notebook-laptop-2-in-1/",
-                    "first-page-format": "/",
-                    "second-page-format": "/pagina2",
-                    "html-div-id-to-watch": "listing-right",
-                    "html-classes-to watch": "grid-products clearfix product-list-container | product-box-container | product-box | pb-price-container | pb-price | price"
-                }
-            }
-        }
-    ]
+        ]
+    }]
 }

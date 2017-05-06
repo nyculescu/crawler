@@ -6,7 +6,8 @@
 
 // Flag for system initialization
 //var isCrawlInitiated = false;
-
+// Promise based HTTP client for the browser and node.js
+var axios = require('axios');
 // Delay a promise a specified amount of time
 var delay = require('delay');
 // Request library is used to make HTTP requests
@@ -33,14 +34,16 @@ var logger;
  * This is the main function of this file
  */
 function crawl() {
-    var reconnect_attempts = 5;
-
     if (config !== undefined || config.sites !== undefined) {
         for (i = 0; i < config.sites.length; i++) {
-            crawl__establish_connection_then_parse((reconnect_attempts - 1), i);
+            let domain_name = config.sites[i].name;
+
+            for (j = 0; j < config.sites[i].map.length; j++) {
+                crawl__establish_connection_then_parse(domain_name, config.sites[i].url + config.sites[i].map[j].url);
+            }
         }
     } else {
-        log__to_console_and_file('e', 'g', 'Error in config.jason file');
+        log__to_console_and_file('e', 'g', 'Error in config.jason file | 2');
     }
 }
 
@@ -48,48 +51,65 @@ function crawl() {
  * Function used for establishing the connection between webpages from config.json and this application
  * reconnect_attempts should be grater or equal to 0 !
  */
-function crawl__establish_connection_then_parse(reconnect_attempts, url_no) {
-    // Array with URLs wanted to be accessed. - not really needed
-    var url = new URL(config.sites[url_no].url);
-    var baseUrl = url.protocol + "//" + url.hostname;
+function crawl__establish_connection_then_parse(domain_name, base_url) {
+    axios.get(base_url).then((response) => {
+            let $ = cheerio.load(response.data);
+            let price_list = [];
+            let x = 0;
 
-    request(baseUrl, function(error, response, body) {
-        // Check status code (200 is HTTP OK)
-        // Read about status code: https://www.addedbytes.com/articles/for-beginners/http-status-codes/
-        if (reconnect_attempts >= 0 && (response === undefined || response.statusCode !== 200)) {
-            delay(1000)
-                .then(() => {
-                    // Executed after 1000 milliseconds
-                    log__to_console_and_file('e', '', 'Attempt to reconnect to ' + baseUrl);
-                    crawl__establish_connection_then_parse(--reconnect_attempts, url_no);
-                });
-        } else if (reconnect_attempts < 0 && (response === undefined || response.statusCode !== 200)) {
-            log__to_console_and_file('e', '', 'Failed to connect to ' + baseUrl);
-        } else if (response !== undefined && response.statusCode === 200) {
-            log__to_console_and_file('i', '', 'status code: ' + response.statusCode + ' on ' + baseUrl);
-            // Now that the connection is established, we'll parse the webpage's body
-            switch (url.host) {
-                case 'www.emag.ro':
-                    crawl__parse_emag(body);
+            switch (domain_name) {
+                case 'pc_garage':
+                    price_list = crawl__parse_pcgarage($);
                     break;
-                case 'www.pcgarage.ro':
-                    crawl__parse_pcgarage(body);
-                    // after parsing the webpage, data shall be added to a database 
-                    // @todo mongodb implementation
+                case 'emag':
+                    price_list = crawl__parse_emag($);
                     break;
                 default:
+                    log__to_console_and_file('e', 'g', 'Error in config.jason file | 1');
                     break;
             }
-        }
-    });
+            return (price_list);
+        })
+        .then((price_list) => {
+            console.log(price_list);
+        })
+        .catch(function(error) {
+            let error_msg;
+            if (error.response) {
+                error_msg = 'Connection error. Status: ' + error.response.status;
+            } else {
+                // Something happened in setting up the request that triggered an Error 
+                error_msg = 'Connection error. ', error.message;
+            }
+            console.log(error_msg + ' | ' + error.config.url + ' is ' + error.config.data);
+        });
 }
 
 /**
  * Specific function for www.emag.ro crawling
+ * EMAG detect when a big activity is made from a specific IP ! @todo Add a proxy connection to this site
  */
-function crawl__parse_emag(body) {
-    // www.emag.ro returns 500 for some reason
-    // @todo To be investigated
+function crawl__parse_emag($) {
+    let price_list = [];
+
+    let x = 0;
+    //*[@id="products-holder"]/div[2]/form/div[2] // a href
+    $('.middle-container', '#products-holder').each((i, elm) => {
+        price_list[x] = [];
+        price_list[x][0] = 'product: ' + $(elm).children().first().children().first().attr('href');
+        x++;
+    });
+
+    x = 0;
+    //*[@id="pret2"]/div/div[1]/div/span[3]/span[1] // money-int
+    //*[@id="pret2"]/div/div[1]/div/span[3]/span[2] // money-currency
+    $('.price-over', '#pret2').each((i, elm) => {
+        price_list[x][1] = 'price: ' + $(elm).children().first().text();
+        price_list[x][2] = 'currency: ' + $(elm).children().eq(2).text();
+        x++;
+    });
+
+    return (price_list);
 }
 
 /**
@@ -98,21 +118,25 @@ function crawl__parse_emag(body) {
  * We will use config.json to know for what are we looking for
  * To parse the content we will use XPath & Cheerio
  */
-function crawl__parse_pcgarage(body) {
-    // Parse the document body
-    var $ = cheerio.load(body);
+function crawl__parse_pcgarage($) {
+    let price_list = [];
+    let x = 0;
+    $('.pb-name', '#listing-right').each((i, elm) => {
+        price_list[x] = [];
+        //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[2]/div[1]/a
+        price_list[x][0] = 'product: ' + $(elm).children().first().attr('href');
+        x++;
+    });
 
-    /**
-     * Search for the product title and its reference
-     * //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[1]/a
-     */
+    x = 0;
+    $('.pb-price', '#listing-right').each((i, elm) => {
+        //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[3]/div[1]
+        price_list[x][1] = 'price: ' + $(elm).children().first().text().replace(/[^0-9.,]/gi, '');
+        price_list[x][2] = 'currency: ' + $(elm).children().text().replace(/[^a-zA-Z]/gi, '');
+        x++;
+    });
 
-    /**
-     * Search for the price
-     * //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[3]/div[1]/p
-     */
-
-    //$('#fruits').children('.pear').text();
+    return (price_list);
 }
 
 /**
