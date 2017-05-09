@@ -1,0 +1,12 @@
+{
+    "name": "emag",
+    "url": "http://www.emag.ro",
+    "functions": "./hosts/emag/functions.js",
+    "groups": [{
+        "product_type": "Gadget",
+        "name": "Laptopuri",
+        "url": "/laptopuri/stoc",
+        "first_page_format": "/c",
+        "second_page_format": "/p2/c"
+    }]
+}
