@@ -1,6 +1,6 @@
 {
     "name": "webcrawler",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Webcrawler written in JavaScript",
     "main": "crawler.js",
     "author": "NyC",
@@ -12,7 +12,6 @@
         "winston": "latest",
         "repeat": "latest",
         "parse-json": "latest",
-        "delay": "latest",
-        "axios": "latest"
+        "delay": "latest"
     }
 }

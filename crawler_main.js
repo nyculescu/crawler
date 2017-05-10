@@ -9,7 +9,7 @@
 // Flag for system initialization
 //var isCrawlInitiated = false;
 // Promise based HTTP client for the browser and node.js
-var axios = require('axios');
+//var axios = require('axios');
 // Delay a promise a specified amount of time
 var delay = require('delay');
 // Request library is used to make HTTP requests
@@ -32,9 +32,14 @@ var logger;
 // After the connection with a webpage is established we will download its bosy to this var
 //var webpage_body;
 //--------------------------------------------------------------
+var product_struct = function() {
+    this.product_type;
+    this.product_link;
+    this.price;
+    this.currency;
+};
+var product_list = [];
 
-var crawl__pcgarage_cnt = 0;
-var crawl__emag_cnt = 0;
 var crawl__call_interval_pcgarage;
 var crawl__call_interval_emag;
 
@@ -43,6 +48,8 @@ var crawl__call_interval_emag;
  */
 function crawl__main() {
     var interval = 2000; //2 seconds
+    var crawl__pcgarage_cnt = 0;
+    var crawl__emag_cnt = 0;
 
     if (crawl__check_config_files()) {
         setTimeout(function() {
@@ -50,10 +57,14 @@ function crawl__main() {
                 crawl__pcgarage_cnt++;
 
                 if (crawl__pcgarage_cnt < config_pcgarage.groups.length) {
-                    crawl__establish_connection_then_parse(config_pcgarage.name, config_pcgarage.url + config_pcgarage.groups[crawl__pcgarage_cnt].url, config_pcgarage.groups[crawl__pcgarage_cnt].product_type);
-                } else {
+                    crawl__establish_connection_then_parse(
+                        config_pcgarage.name,
+                        config_pcgarage.url + config_pcgarage.groups[crawl__pcgarage_cnt].url,
+                        config_pcgarage.groups[crawl__pcgarage_cnt].product_type
+                    );
+                } else
                     clearInterval(crawl__call_interval_pcgarage);
-                }
+
             }, interval);
         }, 0);
 
@@ -69,44 +80,60 @@ function crawl__main() {
             }, interval);
         }, 500);*/
     }
+
+    //Print the products after a certain time 
+    //@todo To be replaced
+    setTimeout(function() {
+        if (product_list !== undefined) {
+            for (var i = 0; product_list.length; i++) {
+                if (product_list[i] !== undefined) {
+                    for (var j = 0; j < product_list[i].length; j++) {
+                        if (product_list[i][j].product_type !== undefined ||
+                            product_list[i][j].product_link !== undefined ||
+                            product_list[i][j].price !== undefined ||
+                            product_list[i][j].currency !== undefined) {
+                            var toLog = '"product_list" = ' + '{ ' +
+                                '"id":"[' + i + '][' + j + ']", ' +
+                                '"product_type":"' + product_list[i][j].product_type + '", ' +
+                                '"product_link":"' + product_list[i][j].product_link + '", ' +
+                                '"price":"' + product_list[i][j].price + '", ' +
+                                '"currency":"' + product_list[i][j].currency + '" }'
+                            LOG__to_console_and_file('i', 'g', toLog);
+                        }
+                    }
+                }
+            }
+        }
+    }, 5000);
 }
 
 /**
  * Function used for establishing the connection between webpages from config_pcgarage.json and this application
  * reconnect_attempts should be grater or equal to 0 !
  */
-function crawl__establish_connection_then_parse(domain_name, base_url, product_type) {
-    axios.get(base_url).then((response) => {
-            let $ = cheerio.load(response.data);
-            let price_list = [];
-            let x = 0;
-
-            switch (domain_name) {
-                case 'pcgarage':
-                    price_list = crawl__parse_pcgarage($, product_type);
-                    break;
-                case 'emag':
-                    price_list = crawl__parse_emag($, product_type);
-                    break;
-                default:
-                    LOG__to_console_and_file('e', 'g', 'Error in config_' + domain_name + '.jason file | 3');
-                    break;
-            }
-            return (price_list);
-        })
-        .then((price_list) => {
-            LOG__to_console_and_file('i', domain_name, price_list);
-        })
-        .catch(function(error) {
-            let error_msg;
-            if (error.response) {
-                error_msg = 'Connection error with ' + error.config.url + '. Status: ' + error.response.status;
-            } else {
-                // Something happened in setting up the request that triggered an Error 
-                error_msg = 'Connection error with ' + error.config.url;
-            }
-            LOG__to_console_and_file('e', domain_name, error_msg + ' | ' + error.message);
-        });
+function crawl__establish_connection_then_parse(domain_name, base_url, product_type /*, pcgarage_cnt*/ ) {
+    request(base_url, function(err, resp, body) {
+        if (err) {
+            LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'error: ' + err);
+            return;
+        } else {
+            if (resp.statusCode === 200) {
+                switch (domain_name) {
+                    case 'pcgarage':
+                        product_list.push(crawl__parse_pcgarage(cheerio.load(body), product_type, base_url));
+                        break;
+                    case 'emag':
+                        product_list.push(crawl__parse_emag(cheerio.load(body), product_type, base_url));
+                        break;
+                    default:
+                        LOG__to_console_and_file('e', domain_name, 'Error in config_' + domain_name + '.jason file | 3');
+                        return;
+                }
+            } else
+                LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'response: ' + resp.statusCode);
+            return;
+        }
+    });
 }
 
 /**
@@ -114,13 +141,13 @@ function crawl__establish_connection_then_parse(domain_name, base_url, product_t
  * EMAG detect when a big activity is made from a specific IP ! @todo Add a proxy connection to this site
  */
 function crawl__parse_emag($, product_type) {
-    /*let price_list = [];
+    /*let product_list = [];
 
     let x = 0;
     //*[@id="products-holder"]/div[2]/form/div[2] // a href
     $('.middle-container', '#products-holder').each((i, elm) => {
-        price_list[x] = [];
-        price_list[x][0] = 'product: ' + $(elm).children().first().children().first().attr('href');
+        product_list[x] = [];
+        product_list[x][0] = 'product: ' + $(elm).children().first().children().first().attr('href');
         x++;
     });
 
@@ -128,12 +155,12 @@ function crawl__parse_emag($, product_type) {
     //*[@id="pret2"]/div/div[1]/div/span[3]/span[1] // money-int
     //*[@id="pret2"]/div/div[1]/div/span[3]/span[2] // money-currency
     $('.price-over', '#pret2').each((i, elm) => {
-        price_list[x][1] = 'price: ' + $(elm).children().first().text();
-        price_list[x][2] = 'currency: ' + $(elm).children().eq(2).text();
+        product_list[x][1] = 'price: ' + $(elm).children().first().text();
+        product_list[x][2] = 'currency: ' + $(elm).children().eq(2).text();
         x++;
     });
 
-    return (price_list);*/
+    return (product_list);*/
 }
 
 /**
@@ -142,53 +169,43 @@ function crawl__parse_emag($, product_type) {
  * We will use config_pcgarage.json to know for what are we looking for
  * To parse the content we will use XPath & Cheerio
  */
-function crawl__parse_pcgarage($, product_type) {
-    let price_list = [];
-    let x = 0;
+function crawl__parse_pcgarage($, prod_type, base_url) {
+    var price_l = [];
 
-    //Check if it's in the shop's stock     //*[@id="listing-right"]/div[3]/div[5]/div/div[3]/div[4]
-    $('.pb-availability', '#listing-right').each((i, elm) => {
-        if (price_list[x] === undefined)
-            price_list[x] = [];
-
-        if ($(elm).text().includes('In stoc furnizor')) {
-            price_list[x][3] = 'on stock: ' + 'yes';
-        } else if ($(elm).text().includes('Nu este in stoc')) {
-            price_list[x][3] = 'on stock: ' + 'no';
-        } else {
-            price_list[x][3] = 'read error';
-            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the stock availablity failed');
-            //return;
-        }
-        x++;
-    });
-
-    x = 0;
+    //*[@id="listing-right"]/div[3]/div[1]/div/div[2]/div[1]/a
     $('.pb-name', '#listing-right').each((i, elm) => {
-        if (price_list[x] === undefined)
-            price_list[x] = [];
+        price_l[i] = new product_struct();
+
+        price_l[i].product_type = prod_type;
 
         //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[2]/div[1]/a
-        price_list[x][0] = 'product: ' + $(elm).children().first().attr('href');
-
-        x++;
+        if ($(elm).children().first().attr('href'))
+            price_l[i].product_link = $(elm).children().first().attr('href');
+        else {
+            price_l[i].product_link = undefined;
+            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'product link' + ' failed on: ' + base_url);
+        }
     });
 
-    x = 0;
+    //*[@id="listing-right"]/div[3]/div[2]/div/div[3]/div[1]/p
     $('.pb-price', '#listing-right').each((i, elm) => {
-        if (price_list[x] === undefined)
-            price_list[x] = [];
-
         //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[3]/div[1]
-        price_list[x][1] = 'price: ' + $(elm).children().first().text().replace(/[^0-9.,]/gi, '');
-        price_list[x][2] = 'currency: ' + $(elm).children().text().replace(/[^a-zA-Z]/gi, '');
+        if ($(elm).children().first().text())
+            price_l[i].price = $(elm).children().first().text().replace(/[^0-9.,]/gi, '');
+        else {
+            price_l[i].price = undefined;
+            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'price' + ' failed on: ' + base_url);
+        }
 
-        price_list[x][4] = product_type;
-
-        x++;
+        if ($(elm).children().text())
+            price_l[i].currency = $(elm).children().text().replace(/[^a-zA-Z]/gi, '');
+        else {
+            price_l[i].currency = undefined;
+            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'currency' + ' failed on: ' + base_url);
+        }
     });
 
-    return (price_list);
+    return (price_l);
 }
 
 /**
@@ -306,3 +323,4 @@ function crawl__check_config_files() {
 module.exports = crawl__main;
 
 crawl__main();
+//app.listen(8000);
