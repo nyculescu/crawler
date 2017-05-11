@@ -1,169 +1,168 @@
 {
     "name": "pcgarage",
-    "groups": [
-        {
-            "product_type": "Gadget",
-            "name": "Smartphone",
+    "groups": [{
+            "group_type": "gadget",
+            "product_type": "smartphone",
             "url": "/smartphone"
         },
         {
-            "product_type": "Gadget",
-            "name": "Ultrabook",
+            "group_type": "gadget",
+            "product_type": "ultrabook",
             "url": "/ultrabook"
         },
         {
-            "product_type": "Gadget",
-            "name": "notebook laptop 2 in 1",
+            "group_type": "gadget",
+            "product_type": "notebook laptop 2 in 1",
             "url": "/notebook-laptop-2-in-1"
         },
         {
-            "product_type": "Gadget",
-            "name": "Notebook laptop",
+            "group_type": "gadget",
+            "product_type": "notebook-laptop",
             "url": "/notebook-laptop"
         },
         {
-            "product_type": "Gadget",
-            "name": "Smartwatch",
+            "group_type": "gadget",
+            "product_type": "smartwatch",
             "url": "/smartwatch"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "sisteme-pc-garage",
+            "group_type": "system_server",
+            "product_type": "sisteme-pc-garage",
             "url": "/sisteme-pc-garage"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "sisteme-all-in-one",
+            "group_type": "system_server",
+            "product_type": "sisteme-all-in-one",
             "url": "/sisteme-all-in-one"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "sisteme-brand",
+            "group_type": "system_server",
+            "product_type": "sisteme-brand",
             "url": "/sisteme-brand"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "sisteme-nettop",
+            "group_type": "system_server",
+            "product_type": "sisteme-nettop",
             "url": "/sisteme-nettop"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "servere",
+            "group_type": "system_server",
+            "product_type": "servere",
             "url": "/servere"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "procesoare-server",
+            "group_type": "system_server",
+            "product_type": "procesoare-server",
             "url": "/procesoare-server"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "unitati-de-stocare-server",
+            "group_type": "system_server",
+            "product_type": "unitati-de-stocare-server",
             "url": "/unitati-de-stocare-server"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "memorii-server",
+            "group_type": "system_server",
+            "product_type": "memorii-server",
             "url": "/memorii-server"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "controllere",
+            "group_type": "system_server",
+            "product_type": "controllere",
             "url": "/controllere"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "solutii-stocare",
+            "group_type": "system_server",
+            "product_type": "solutii-stocare",
             "url": "/solutii-stocare"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "accesorii-servere",
+            "group_type": "system_server",
+            "product_type": "accesorii-servere",
             "url": "/accesorii-servere"
         },
         {
-            "product_type": "PC",
-            "name": "ups",
+            "group_type": "pc",
+            "product_type": "ups",
             "url": "/ups"
         },
         {
-            "product_type": "PC",
-            "name": "placi-video",
+            "group_type": "pc",
+            "product_type": "placi-video",
             "url": "/placi-video"
         },
         {
-            "product_type": "PC",
-            "name": "placi-video-profesionale",
+            "group_type": "pc",
+            "product_type": "placi-video-profesionale",
             "url": "/placi-video-profesionale"
         },
         {
-            "product_type": "PC",
-            "name": "procesoare",
+            "group_type": "pc",
+            "product_type": "procesoare",
             "url": "/procesoare"
         },
         {
-            "product_type": "PC",
-            "name": "placi-de-baza",
+            "group_type": "pc",
+            "product_type": "placi-de-baza",
             "url": "/placi-de-baza"
         },
         {
-            "product_type": "PC",
-            "name": "memorii",
+            "group_type": "pc",
+            "product_type": "memorii",
             "url": "/memorii"
         },
         {
-            "product_type": "PC",
-            "name": "ssd",
+            "group_type": "pc",
+            "product_type": "ssd",
             "url": "/ssd"
         },
         {
-            "product_type": "PC",
-            "name": "coolere",
+            "group_type": "pc",
+            "product_type": "coolere",
             "url": "/coolere"
         },
         {
-            "product_type": "Gadget",
-            "name": "drona-robot",
+            "group_type": "gadget",
+            "product_type": "drona-robot",
             "url": "/drona-robot"
         },
         {
-            "product_type": "Home",
-            "name": "scaune-gaming",
+            "group_type": "home",
+            "product_type": "scaune-gaming",
             "url": "/scaune-gaming"
         },
         {
-            "product_type": "Home",
-            "name": "televizoare-led",
+            "group_type": "home",
+            "product_type": "televizoare-led",
             "url": "/televizoare-led"
         },
         {
-            "product_type": "Gadget",
-            "name": "aparate-foto-d-slr",
+            "group_type": "gadget",
+            "product_type": "aparate-foto-d-slr",
             "url": "/aparate-foto-d-slr"
         },
         {
-            "product_type": "Gadget",
-            "name": "videoproiectoare",
+            "group_type": "gadget",
+            "product_type": "videoproiectoare",
             "url": "/videoproiectoare"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "firewall",
+            "group_type": "system_server",
+            "product_type": "firewall",
             "url": "/firewall"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "routere",
+            "group_type": "system_server",
+            "product_type": "routere",
             "url": "/routere"
         },
         {
-            "product_type": "Sys & Server",
-            "name": "nas",
+            "group_type": "system_server",
+            "product_type": "nas",
             "url": "/nas"
         },
         {
-            "product_type": "Gadget",
-            "name": "kit-uri-supraveghere",
+            "group_type": "gadget",
+            "product_type": "kit-uri-supraveghere",
             "url": "/kit-uri-supraveghere"
         }
     ]

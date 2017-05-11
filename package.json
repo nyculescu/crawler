@@ -1,17 +1,13 @@
 {
     "name": "webcrawler",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "Webcrawler written in JavaScript",
     "main": "crawler.js",
     "author": "NyC",
     "license": "ISC",
     "dependencies": {
         "cheerio": "latest",
-        "url-parse": "latest",
         "request": "latest",
-        "winston": "latest",
-        "repeat": "latest",
-        "parse-json": "latest",
-        "delay": "latest"
+        "winston": "latest"
     }
 }

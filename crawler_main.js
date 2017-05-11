@@ -11,17 +11,17 @@
 // Promise based HTTP client for the browser and node.js
 //var axios = require('axios');
 // Delay a promise a specified amount of time
-var delay = require('delay');
+//var delay = require('delay');
+// URL library is used to parse URL
+//var URL = require('url-parse');
+// File I/O is provided by simple wrappers around standard POSIX functions. All the methods have async and sync forms.
+//var fs = require('fs');
 // Request library is used to make HTTP requests
 var request = require('request');
 // Cheerio library is used to parse and select HTML elements on the page
 var cheerio = require('cheerio');
-// URL library is used to parse URL
-var URL = require('url-parse');
 // Winston library is logging library with support for multiple transports. Ref: https://github.com/winstonjs/winston
 var winston = require('winston');
-// File I/O is provided by simple wrappers around standard POSIX functions. All the methods have async and sync forms.
-var fs = require('fs');
 // Parse the config.json file
 var config_pcgarage = require('./pages/config_pcgar.json'); //@todo to be renamed!
 var config_emag = require('./pages/config_emg.json'); //@todo to be renamed!
@@ -32,7 +32,8 @@ var logger;
 // After the connection with a webpage is established we will download its bosy to this var
 //var webpage_body;
 //--------------------------------------------------------------
-var product_struct = function () {
+var product_struct = function() {
+    this.group_type
     this.product_type;
     this.product_link;
     this.price;
@@ -49,81 +50,49 @@ var crawl__emag_cnt = 0;
  * This is the main function of this file
  */
 function crawl__main() {
-    var group_counter = 0;
+    var group_counter_pcgarage = 0;
+    var group_counter_emag = 0;
     var interval = 0;
     var delay = 100;
 
     if (crawl__check_config_files()) {
         //Do the work for pcgarage
-        setTimeout(function () {
-            if (group_counter < config_pcgarage.groups.length) {
+        setTimeout(function() {
+            if (group_counter_pcgarage < config_pcgarage.groups.length) {
                 //crawl__call_interval_pcgarage = setInterval(function () {
-                crawl__establish_connection_then_parse(config_pcgarage.name, group_counter);
-                group_counter++;
+                crawl__establish_connection_then_parse(config_pcgarage.name, group_counter_pcgarage);
+                group_counter_pcgarage++;
                 //}, interval);
             }
         }, delay * 0);
 
         //Do the work for emag
-        setTimeout(function () {
-            group_counter = 0;
-            if (group_counter < config_emag.groups.length) {
+        setTimeout(function() {
+            if (group_counter_emag < config_emag.groups.length) {
                 //crawl__call_interval_pcgarage = setInterval(function () {
-                crawl__establish_connection_then_parse(config_emag.name, group_counter);
-                group_counter++;
+                //crawl__establish_connection_then_parse(config_emag.name, group_counter_emag);
+                group_counter_emag++;
                 //}, interval);
             }
         }, delay * 1);
 
     }
 
-    /*setTimeout(function() {
-        crawl__call_interval_pcgarage = setInterval(function() {
-            crawl__pcgarage_cnt++;
-
-            if (crawl__pcgarage_cnt < config_pcgarage.groups.length) {
-                //Take each page from each group
-                //Establish connection for the first page
-                
-                //Establish connection for the next pages
-                
-                crawl__establish_connection_then_parse(
-                    config_pcgarage.name,
-                    config_pcgarage.url + config_pcgarage.groups[crawl__pcgarage_cnt].url,
-                    config_pcgarage.groups[crawl__pcgarage_cnt].product_type
-                );
-            } else
-                clearInterval(crawl__call_interval_pcgarage);
-
-        }, interval);
-    }, 0);*/
-
-    /*setTimeout(function() {
-        crawl__call_interval_emag = setInterval(function() {
-            crawl__emag_cnt++;
-
-            if (crawl__emag_cnt < config_emag.groups.length) {
-                crawl__establish_connection_then_parse(config_pcgarage.name, config_pcgarage.url + config_pcgarage.groups[crawl__emag_cnt].url, config_pcgarage.groups[crawl__emag_cnt].product_type);
-            } else {
-                clearInterval(crawl__call_interval_emag);
-            }
-        }, interval);
-    }, 500);*/
-
-
     //Print the products after a certain time 
     //@todo To be replaced
-    setTimeout(function () {
+    setTimeout(function() {
         if (product_list !== undefined) {
             for (var i = 0; product_list.length; i++) {
                 if (product_list[i] !== undefined) {
                     for (var j = 0; j < product_list[i].length; j++) {
                         if (product_list[i][j].product_type !== undefined ||
+                            product_list[i][j].group_type !== undefined ||
                             product_list[i][j].product_link !== undefined ||
                             product_list[i][j].price !== undefined ||
                             product_list[i][j].currency !== undefined) {
                             var toLog = '"product_list" = ' + '{ ' +
                                 '"id":"[' + i + '][' + j + ']", ' +
+                                '"group_type":"' + product_list[i][j].group_type + '", ' +
                                 '"product_type":"' + product_list[i][j].product_type + '", ' +
                                 '"product_link":"' + product_list[i][j].product_link + '", ' +
                                 '"price":"' + product_list[i][j].price + '", ' +
@@ -134,7 +103,7 @@ function crawl__main() {
                 }
             }
         }
-    }, 5000);
+    }, 30000);
 }
 
 /**
@@ -142,33 +111,40 @@ function crawl__main() {
  * reconnect_attempts should be grater or equal to 0 !
  */
 function crawl__establish_connection_then_parse(pageToCrawl, groupItemsCounter) {
-    var interval = 2000; //2 seconds
+    var interval = 1000; //1 seconds
     var isRequestFailed = false;
-    var pageCounter_emag = 1;
-    var pageCounter_pcgarage = 1;
+    var pageCounter = 1;
+    //var pageCounter_pcgarage = 1;
 
     //Try for the first page
-    crawl__call_interval_pcgarage = setInterval(function () {
+    crawl__call_interval_pcgarage = setInterval(function() {
         if (!isRequestFailed) {
             switch (pageToCrawl) {
                 case 'pcgarage':
-                    if (pageCounter_pcgarage === 1) //Check if it's the first page
-                        //first page format with filters
+                    if (pageCounter === 1) //Check if it's the first page
+                    //first page format with filters
                         var base_url = 'http://www.pcgarage.ro' + config_pcgarage.groups[groupItemsCounter].url + '/filtre/stoc';
                     else
-                        //second page format with filters
-                        var base_url = 'http://www.pcgarage.ro' + config_pcgarage.groups[groupItemsCounter].url + '/pagina' + pageCounter_pcgarage + '/filtre/stoc';
+                    //second page format with filters
+                        var base_url = 'http://www.pcgarage.ro' + config_pcgarage.groups[groupItemsCounter].url + '/pagina' + pageCounter + '/filtre/stoc';
 
-                    pageCounter_pcgarage++;
+                    pageCounter++;
 
                     //Take each page from each group
-                    request(base_url, function (err, resp, body) {
+                    request(base_url, function(err, resp, body) {
                         if (err) {
                             LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'error: ' + err);
                         } else {
                             // The connection is OK and the page has content
                             if (resp.statusCode === 200) {
-                                product_list.push(crawl__parse_pcgarage(cheerio.load(body), config_pcgarage.groups[groupItemsCounter].product_type, base_url));
+                                let product = crawl__parse_pcgarage(
+                                    cheerio.load(body),
+                                    config_pcgarage.groups[groupItemsCounter].group_type,
+                                    config_pcgarage.groups[groupItemsCounter].product_type,
+                                    base_url
+                                );
+                                if (product)
+                                    product_list.push(product);
                             }
                             // The connection is OK but teh page is inexistent
                             else if (resp.statusCode === 404) {
@@ -183,23 +159,30 @@ function crawl__establish_connection_then_parse(pageToCrawl, groupItemsCounter) 
                     });
                     break;
                 case 'emag':
-                    if (crawl__emag_cnt === 1) //Check if it's the first page
-                        //first page format with filters
+                    if (pageCounter === 1) //Check if it's the first page
+                    //first page format with filters
                         var base_url = 'http://www.emag.ro' + config_emag.groups[groupItemsCounter].url + '/stoc/c';
                     else
-                        //second page format with filters
-                        var base_url = 'http://www.emag.ro' + config_emag.groups[groupItemsCounter].url + '/stoc/p' + crawl__emag_cnt + '/c';
+                    //second page format with filters
+                        var base_url = 'http://www.emag.ro' + config_emag.groups[groupItemsCounter].url + '/stoc/p' + pageCounter + '/c';
 
-                    crawl__emag_cnt++;
+                    pageCounter++;
 
                     //Take each page from each group
-                    request(base_url, function (err, resp, body) {
+                    request(base_url, function(err, resp, body) {
                         if (err) {
                             LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'error: ' + err);
                         } else {
                             // The connection is OK and the page has content
                             if (resp.statusCode === 200) {
-                                product_list.push(crawl__parse_emag(cheerio.load(body), config_emag.groups[groupItemsCounter].product_type, base_url));
+                                let product = crawl__parse_emag(
+                                    cheerio.load(body),
+                                    config_pcgarage.groups[groupItemsCounter].group_type,
+                                    config_emag.groups[groupItemsCounter].product_type,
+                                    base_url
+                                );
+                                if (product)
+                                    product_list.push(product);
                             }
                             // The connection is OK but teh page is inexistent
                             else if (resp.statusCode === 404) {
@@ -211,8 +194,8 @@ function crawl__establish_connection_then_parse(pageToCrawl, groupItemsCounter) 
                                 LOG__to_console_and_file('e', pageToCrawl, 'Error in establishing the connection for ' + base_url + ' | ' + 'response: ' + resp.statusCode);
                             }
                         }
-                    }); F
-                    //product_list.push(crawl__parse_emag(cheerio.load(body), product_type, base_url));
+                    });
+                    product_list.push(crawl__parse_emag(cheerio.load(body), product_type, base_url));
                     break;
                 default:
                     LOG__to_console_and_file('e', pageToCrawl, 'Error in config_' + pageToCrawl + '.jason file | 3');
@@ -227,27 +210,45 @@ function crawl__establish_connection_then_parse(pageToCrawl, groupItemsCounter) 
  * Specific function for www.emag.ro crawling
  * EMAG detect when a big activity is made from a specific IP ! @todo Add a proxy connection to this site
  */
-function crawl__parse_emag($, product_type) {
-    /*let product_list = [];
+function crawl__parse_emag($, group_type, product_type, base_url) {
+    var price_l = [];
+    var product;
 
-    let x = 0;
-    //*[@id="products-holder"]/div[2]/form/div[2] // a href
-    $('.middle-container', '#products-holder').each((i, elm) => {
-        product_list[x] = [];
-        product_list[x][0] = 'product: ' + $(elm).children().first().children().first().attr('href');
-        x++;
-    });
-
-    x = 0;
     //*[@id="pret2"]/div/div[1]/div/span[3]/span[1] // money-int
     //*[@id="pret2"]/div/div[1]/div/span[3]/span[2] // money-currency
     $('.price-over', '#pret2').each((i, elm) => {
-        product_list[x][1] = 'price: ' + $(elm).children().first().text();
-        product_list[x][2] = 'currency: ' + $(elm).children().eq(2).text();
-        x++;
+        if ($(elm).children().first().text()) {
+            product = new product_struct();
+            product.product_type = prod_type;
+            product.group_type = group_type;
+            product.price = $(elm).children().first().text().replace(/[^0-9,]/gi, '');
+        } else {
+            //price_l[i].price = undefined;
+            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'price' + ' failed on: ' + base_url);
+            return;
+        }
+
+        //It's clear that if program will reach to this point, product var it's already initialized
+        if ($(elm).children().eq(2).text())
+            product.currency = $(elm).children().eq(2).text().replace(/[^a-zA-Z]/gi, '');
+        else {
+            product.currency = undefined;
+            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'currency' + ' failed on: ' + base_url);
+        }
     });
 
-    return (product_list);*/
+    //It's clear that if program will reach to this point, product var it's already initialized
+    //*[@id="products-holder"]/div[2]/form/div[2] // a href
+    $('.middle-container', '#products-holder').each((i, elm) => {
+        //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[2]/div[1]/a
+        if ($(elm).children().first().children().first().attr('href')) {
+            product.product_link = $(elm).children().first().children().first().attr('href');
+            price_l.push(product);
+        } else {
+            LOG__to_console_and_file('e', config_emag.name, 'Checking the ' + 'product link' + ' failed on: ' + base_url);
+            return;
+        }
+    });
 }
 
 /**
@@ -256,43 +257,73 @@ function crawl__parse_emag($, product_type) {
  * We will use config_pcgarage.json to know for what are we looking for
  * To parse the content we will use XPath & Cheerio
  */
-function crawl__parse_pcgarage($, prod_type, base_url) {
+function crawl__parse_pcgarage($, group_type, prod_type, base_url) {
     var price_l = [];
-
-    //*[@id="listing-right"]/div[3]/div[1]/div/div[2]/div[1]/a
-    $('.pb-name', '#listing-right').each((i, elm) => {
-        price_l[i] = new product_struct();
-
-        price_l[i].product_type = prod_type;
-
-        //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[2]/div[1]/a
-        if ($(elm).children().first().attr('href'))
-            price_l[i].product_link = $(elm).children().first().attr('href');
-        else {
-            price_l[i].product_link = undefined;
-            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'product link' + ' failed on: ' + base_url);
-        }
-    });
+    var product;
 
     //*[@id="listing-right"]/div[3]/div[2]/div/div[3]/div[1]/p
     $('.pb-price', '#listing-right').each((i, elm) => {
         //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[3]/div[1]
-        if ($(elm).children().first().text())
-            price_l[i].price = $(elm).children().first().text().replace(/[^0-9.,]/gi, '');
-        else {
-            price_l[i].price = undefined;
+        if ($(elm).children().first().text()) {
+            product = new product_struct();
+            product.product_type = prod_type;
+            product.group_type = group_type;
+            product.price = $(elm).children().first().text().replace(/[^0-9,]/gi, '');
+        } else {
+            //price_l[i].price = undefined;
             LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'price' + ' failed on: ' + base_url);
+            return;
         }
 
+        //It's clear that if program will reach to this point, product var it's already initialized
         if ($(elm).children().text())
-            price_l[i].currency = $(elm).children().text().replace(/[^a-zA-Z]/gi, '');
+            product.currency = $(elm).children().text().replace(/[^a-zA-Z]/gi, '');
         else {
-            price_l[i].currency = undefined;
+            product.currency = undefined;
             LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'currency' + ' failed on: ' + base_url);
         }
     });
 
+    //It's clear that if program will reach to this point, product var it's already initialized
+    //*[@id="listing-right"]/div[3]/div[1]/div/div[2]/div[1]/a
+    $('.pb-name', '#listing-right').each((i, elm) => {
+        //*[@id="listing-right"]/div[3]/div[1]/div[2]/div[2]/div[1]/a
+        if ($(elm).children().first().attr('href')) {
+            product.product_link = $(elm).children().first().attr('href');
+            price_l.push(product);
+        } else {
+            LOG__to_console_and_file('e', config_pcgarage.name, 'Checking the ' + 'product link' + ' failed on: ' + base_url);
+            return;
+        }
+    });
+
+    /**
+     *  Sort the products which will go to the database by defined criterias 
+     * 
+     * */
+    switch (price_l.group_type) {
+        case 'gadget':
+            crawl__check_with_database();
+            break;
+        case 'system_server':
+            crawl__check_with_database();
+            break;
+        case 'home':
+            crawl__check_with_database();
+            break;
+        case 'pc':
+            crawl__check_with_database();
+            break;
+        default:
+            break;
+
+    }
+
     return (price_l);
+}
+
+function crawl__check_with_database() {
+
 }
 
 /**
@@ -305,10 +336,10 @@ function LOG__to_console_and_file(log_type, page, message) {
     //If the logger is not instantiated then a new one will be created
     if (logger === undefined) {
         // By default, only the Console transport is set on the default logger. 
-        logger = new (winston.Logger)({
+        logger = new(winston.Logger)({
             transports: [
-                new (winston.transports.Console)(),
-                new (winston.transports.File)({ filename: "crawler_main.log" })
+                new(winston.transports.Console)(),
+                new(winston.transports.File)({ filename: "crawler_main.log" })
             ]
         });
     }
@@ -333,21 +364,21 @@ function LOG__to_console_and_file(log_type, page, message) {
         case "i":
             logger.info(message);
             break;
-        /*case "d":
-            logger.debug(message);
-            break;*/
-        //I don't know the reason, but this doesn't work
-        /*case "v":
-            logger.verbose(message);
-            break;*/
-        //I don't know the reason, but this doesn't work
+            /*case "d":
+                logger.debug(message);
+                break;*/
+            //I don't know the reason, but this doesn't work
+            /*case "v":
+                logger.verbose(message);
+                break;*/
+            //I don't know the reason, but this doesn't work
         case "w":
             logger.warn(message);
             break;
-        /*case "s":
-            logger.silly(message);
-            break;*/
-        //I don't know the reason, but this doesn't work
+            /*case "s":
+                logger.silly(message);
+                break;*/
+            //I don't know the reason, but this doesn't work
         default:
             logger.error("Error in log function | Incorrect printing to the log file");
             break;

@@ -1,0 +1,2 @@
+{"level":"error","message":"PC-GARAGE | Error in establishing the connection for http://www.pcgarage.ro/smartphone/pagina11/filtre/stoc | response: 404","timestamp":"2017-05-11T20:27:40.497Z"}
+{"level":"info","message":"GENERAL | \"product_list\" = { \"id\":\"[0][0]\", \"group_type\":\"gadget\", \"product_type\":\"smartphone\", \"product_link\":\"http://www.pcgarage.ro/smartphone/microsoft/lumia-950-xl-32gb-4g-black/\", \"price\":\"1598,99\", \"currency\":\"RON\" }","timestamp":"2017-05-11T20:27:58.836Z"}
