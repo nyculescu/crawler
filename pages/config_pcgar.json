@@ -2,270 +2,175 @@
     "name": "pcgarage",
     "url": "http://www.pcgarage.ro",
     "functions": "./hosts/pcgarage/functions.js",
+    "filter": "/filtre/stoc",
+    "first_page_format": "/",
+    "second_page_format_1": "/pagina",
+    "second_page_format_2": 2,
     "groups": [
         {
             "product_type": "Gadget",
             "name": "Smartphone",
-            "url": "/smartphone",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/smartphone"
         },
         {
             "product_type": "Gadget",
             "name": "Ultrabook",
-            "url": "/ultrabook",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/ultrabook"
         },
         {
             "product_type": "Gadget",
             "name": "notebook laptop 2 in 1",
-            "url": "/notebook-laptop-2-in-1",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/notebook-laptop-2-in-1"
         },
         {
             "product_type": "Gadget",
             "name": "Notebook laptop",
-            "url": "/notebook-laptop",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/notebook-laptop"
         },
         {
             "product_type": "Gadget",
             "name": "Smartwatch",
-            "url": "/smartwatch",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/smartwatch"
         },
         {
             "product_type": "Sys & Server",
             "name": "sisteme-pc-garage",
-            "url": "/sisteme-pc-garage",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/sisteme-pc-garage"
         },
         {
             "product_type": "Sys & Server",
             "name": "sisteme-all-in-one",
-            "url": "/sisteme-all-in-one",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/sisteme-all-in-one"
         },
         {
             "product_type": "Sys & Server",
             "name": "sisteme-brand",
-            "url": "/sisteme-brand",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/sisteme-brand"
         },
         {
             "product_type": "Sys & Server",
             "name": "sisteme-nettop",
-            "url": "/sisteme-nettop",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/sisteme-nettop"
         },
         {
             "product_type": "Sys & Server",
             "name": "servere",
-            "url": "/servere",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/servere"
         },
         {
             "product_type": "Sys & Server",
             "name": "procesoare-server",
-            "url": "/procesoare-server",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/procesoare-server"
         },
         {
             "product_type": "Sys & Server",
             "name": "unitati-de-stocare-server",
-            "url": "/unitati-de-stocare-server",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/unitati-de-stocare-server"
         },
         {
             "product_type": "Sys & Server",
             "name": "memorii-server",
-            "url": "/memorii-server",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/memorii-server"
         },
         {
             "product_type": "Sys & Server",
             "name": "controllere",
-            "url": "/controllere",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/controllere"
         },
         {
             "product_type": "Sys & Server",
             "name": "solutii-stocare",
-            "url": "/solutii-stocare",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/solutii-stocare"
         },
         {
             "product_type": "Sys & Server",
             "name": "accesorii-servere",
-            "url": "/accesorii-servere",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/accesorii-servere"
         },
         {
             "product_type": "PC",
             "name": "ups",
-            "url": "/ups",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/ups"
         },
         {
             "product_type": "PC",
             "name": "placi-video",
-            "url": "/placi-video",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/placi-video"
         },
         {
             "product_type": "PC",
             "name": "placi-video-profesionale",
-            "url": "/placi-video-profesionale",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/placi-video-profesionale"
         },
         {
             "product_type": "PC",
             "name": "procesoare",
-            "url": "/procesoare",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/procesoare"
         },
         {
             "product_type": "PC",
             "name": "placi-de-baza",
-            "url": "/placi-de-baza",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/placi-de-baza"
         },
         {
             "product_type": "PC",
             "name": "memorii",
-            "url": "/memorii",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/memorii"
         },
         {
             "product_type": "PC",
             "name": "ssd",
-            "url": "/ssd",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/ssd"
         },
         {
             "product_type": "PC",
             "name": "coolere",
-            "url": "/coolere",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/coolere"
         },
         {
             "product_type": "Gadget",
             "name": "drona-robot",
-            "url": "/drona-robot",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/drona-robot"
         },
         {
             "product_type": "Home",
             "name": "scaune-gaming",
-            "url": "/scaune-gaming",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/scaune-gaming"
         },
         {
             "product_type": "Home",
             "name": "televizoare-led",
-            "url": "/televizoare-led",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/televizoare-led"
         },
         {
             "product_type": "Gadget",
             "name": "aparate-foto-d-slr",
-            "url": "/aparate-foto-d-slr",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/aparate-foto-d-slr"
         },
         {
             "product_type": "Gadget",
             "name": "videoproiectoare",
-            "url": "/videoproiectoare",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/videoproiectoare"
         },
         {
             "product_type": "Sys & Server",
             "name": "firewall",
-            "url": "/firewall",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/firewall"
         },
         {
             "product_type": "Sys & Server",
             "name": "routere",
-            "url": "/routere",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/routere"
         },
         {
             "product_type": "Sys & Server",
             "name": "nas",
-            "url": "/nas",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/nas"
         },
         {
             "product_type": "Gadget",
             "name": "kit-uri-supraveghere",
-            "url": "/kit-uri-supraveghere",
-            "filter": "/filtre/stoc",
-            "first_page_format": "/",
-            "second_page_format": "/pagina2"
+            "url": "/kit-uri-supraveghere"
         }
     ]
 }
