@@ -1,6 +1,12 @@
-    $ git status
-    [...]
-    # Untracked files:
-    [...]
-    #       crawler_main.log
-    #       node_modules/
+# How to: https://www.atlassian.com/git/tutorials/gitignore
+
+# Untracked files #
+
+
+# Logs and databases #
+**/*.log
+# **/*.sql*
+# **/*.sqlite*
+
+# Untracked folders #
+node_modules/
