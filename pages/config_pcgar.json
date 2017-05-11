@@ -1,11 +1,5 @@
 {
     "name": "pcgarage",
-    "url": "http://www.pcgarage.ro",
-    "functions": "./hosts/pcgarage/functions.js",
-    "filter": "/filtre/stoc",
-    "first_page_format": "/",
-    "second_page_format_1": "/pagina",
-    "second_page_format_2": 2,
     "groups": [
         {
             "product_type": "Gadget",
