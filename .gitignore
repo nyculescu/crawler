@@ -1,7 +1,7 @@
 # How to: https://www.atlassian.com/git/tutorials/gitignore
 
 # Untracked files #
-
+crawler/.vscode/launch.json
 
 # Logs and databases #
 **/*.log
