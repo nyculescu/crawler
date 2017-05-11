@@ -32,7 +32,7 @@ var logger;
 // After the connection with a webpage is established we will download its bosy to this var
 //var webpage_body;
 //--------------------------------------------------------------
-var product_struct = function() {
+var product_struct = function () {
     this.product_type;
     this.product_link;
     this.price;
@@ -42,48 +42,78 @@ var product_list = [];
 
 var crawl__call_interval_pcgarage;
 var crawl__call_interval_emag;
+var crawl__pcgarage_cnt = 0;
+var crawl__emag_cnt = 0;
 
 /**
  * This is the main function of this file
  */
 function crawl__main() {
-    var interval = 2000; //2 seconds
-    var crawl__pcgarage_cnt = 0;
-    var crawl__emag_cnt = 0;
+    var group_counter = 0;
+    var interval = 0;
+    var delay = 100;
 
     if (crawl__check_config_files()) {
-        setTimeout(function() {
-            crawl__call_interval_pcgarage = setInterval(function() {
-                crawl__pcgarage_cnt++;
+        //Do the work for pcgarage
+        setTimeout(function () {
+            if (group_counter < config_pcgarage.groups.length) {
+                //crawl__call_interval_pcgarage = setInterval(function () {
+                crawl__establish_connection_then_parse(config_pcgarage.name, group_counter);
+                group_counter++;
+                //}, interval);
+            }
+        }, delay * 0);
 
-                if (crawl__pcgarage_cnt < config_pcgarage.groups.length) {
-                    crawl__establish_connection_then_parse(
-                        config_pcgarage.name,
-                        config_pcgarage.url + config_pcgarage.groups[crawl__pcgarage_cnt].url,
-                        config_pcgarage.groups[crawl__pcgarage_cnt].product_type
-                    );
-                } else
-                    clearInterval(crawl__call_interval_pcgarage);
+        //Do the work for emag
+        setTimeout(function () {
+            group_counter = 0;
+            if (group_counter < config_emag.groups.length) {
+                //crawl__call_interval_pcgarage = setInterval(function () {
+                crawl__establish_connection_then_parse(config_emag.name, group_counter);
+                group_counter++;
+                //}, interval);
+            }
+        }, delay * 1);
 
-            }, interval);
-        }, 0);
-
-        /*setTimeout(function() {
-            crawl__call_interval_emag = setInterval(function() {
-                crawl__emag_cnt++;
-
-                if (crawl__emag_cnt < config_emag.groups.length) {
-                    crawl__establish_connection_then_parse(config_pcgarage.name, config_pcgarage.url + config_pcgarage.groups[crawl__emag_cnt].url, config_pcgarage.groups[crawl__emag_cnt].product_type);
-                } else {
-                    clearInterval(crawl__call_interval_emag);
-                }
-            }, interval);
-        }, 500);*/
     }
+
+    /*setTimeout(function() {
+        crawl__call_interval_pcgarage = setInterval(function() {
+            crawl__pcgarage_cnt++;
+
+            if (crawl__pcgarage_cnt < config_pcgarage.groups.length) {
+                //Take each page from each group
+                //Establish connection for the first page
+                
+                //Establish connection for the next pages
+                
+                crawl__establish_connection_then_parse(
+                    config_pcgarage.name,
+                    config_pcgarage.url + config_pcgarage.groups[crawl__pcgarage_cnt].url,
+                    config_pcgarage.groups[crawl__pcgarage_cnt].product_type
+                );
+            } else
+                clearInterval(crawl__call_interval_pcgarage);
+
+        }, interval);
+    }, 0);*/
+
+    /*setTimeout(function() {
+        crawl__call_interval_emag = setInterval(function() {
+            crawl__emag_cnt++;
+
+            if (crawl__emag_cnt < config_emag.groups.length) {
+                crawl__establish_connection_then_parse(config_pcgarage.name, config_pcgarage.url + config_pcgarage.groups[crawl__emag_cnt].url, config_pcgarage.groups[crawl__emag_cnt].product_type);
+            } else {
+                clearInterval(crawl__call_interval_emag);
+            }
+        }, interval);
+    }, 500);*/
+
 
     //Print the products after a certain time 
     //@todo To be replaced
-    setTimeout(function() {
+    setTimeout(function () {
         if (product_list !== undefined) {
             for (var i = 0; product_list.length; i++) {
                 if (product_list[i] !== undefined) {
@@ -111,29 +141,86 @@ function crawl__main() {
  * Function used for establishing the connection between webpages from config_pcgarage.json and this application
  * reconnect_attempts should be grater or equal to 0 !
  */
-function crawl__establish_connection_then_parse(domain_name, base_url, product_type /*, pcgarage_cnt*/ ) {
-    request(base_url, function(err, resp, body) {
-        if (err) {
-            LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'error: ' + err);
-            return;
-        } else {
-            if (resp.statusCode === 200) {
-                switch (domain_name) {
-                    case 'pcgarage':
-                        product_list.push(crawl__parse_pcgarage(cheerio.load(body), product_type, base_url));
-                        break;
-                    case 'emag':
-                        product_list.push(crawl__parse_emag(cheerio.load(body), product_type, base_url));
-                        break;
-                    default:
-                        LOG__to_console_and_file('e', domain_name, 'Error in config_' + domain_name + '.jason file | 3');
-                        return;
-                }
-            } else
-                LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'response: ' + resp.statusCode);
-            return;
-        }
-    });
+function crawl__establish_connection_then_parse(pageToCrawl, groupItemsCounter) {
+    var interval = 2000; //2 seconds
+    var isRequestFailed = false;
+    var pageCounter_emag = 1;
+    var pageCounter_pcgarage = 1;
+
+    //Try for the first page
+    crawl__call_interval_pcgarage = setInterval(function () {
+        if (!isRequestFailed) {
+            switch (pageToCrawl) {
+                case 'pcgarage':
+                    if (pageCounter_pcgarage === 1) //Check if it's the first page
+                        //first page format with filters
+                        var base_url = 'http://www.pcgarage.ro' + config_pcgarage.groups[groupItemsCounter].url + '/filtre/stoc';
+                    else
+                        //second page format with filters
+                        var base_url = 'http://www.pcgarage.ro' + config_pcgarage.groups[groupItemsCounter].url + '/pagina' + pageCounter_pcgarage + '/filtre/stoc';
+
+                    pageCounter_pcgarage++;
+
+                    //Take each page from each group
+                    request(base_url, function (err, resp, body) {
+                        if (err) {
+                            LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'error: ' + err);
+                        } else {
+                            // The connection is OK and the page has content
+                            if (resp.statusCode === 200) {
+                                product_list.push(crawl__parse_pcgarage(cheerio.load(body), config_pcgarage.groups[groupItemsCounter].product_type, base_url));
+                            }
+                            // The connection is OK but teh page is inexistent
+                            else if (resp.statusCode === 404) {
+                                LOG__to_console_and_file('e', pageToCrawl, 'Error in establishing the connection for ' + base_url + ' | ' + 'response: ' + resp.statusCode);
+                                isRequestFailed = true;
+                            }
+                            // connetion error
+                            else {
+                                LOG__to_console_and_file('e', pageToCrawl, 'Error in establishing the connection for ' + base_url + ' | ' + 'response: ' + resp.statusCode);
+                            }
+                        }
+                    });
+                    break;
+                case 'emag':
+                    if (crawl__emag_cnt === 1) //Check if it's the first page
+                        //first page format with filters
+                        var base_url = 'http://www.emag.ro' + config_emag.groups[groupItemsCounter].url + '/stoc/c';
+                    else
+                        //second page format with filters
+                        var base_url = 'http://www.emag.ro' + config_emag.groups[groupItemsCounter].url + '/stoc/p' + crawl__emag_cnt + '/c';
+
+                    crawl__emag_cnt++;
+
+                    //Take each page from each group
+                    request(base_url, function (err, resp, body) {
+                        if (err) {
+                            LOG__to_console_and_file('e', domain_name, 'Error in establishing the connection for ' + base_url + ' | ' + 'error: ' + err);
+                        } else {
+                            // The connection is OK and the page has content
+                            if (resp.statusCode === 200) {
+                                product_list.push(crawl__parse_emag(cheerio.load(body), config_emag.groups[groupItemsCounter].product_type, base_url));
+                            }
+                            // The connection is OK but teh page is inexistent
+                            else if (resp.statusCode === 404) {
+                                LOG__to_console_and_file('e', pageToCrawl, 'Error in establishing the connection for ' + base_url + ' | ' + 'response: ' + resp.statusCode);
+                                isRequestFailed = true;
+                            }
+                            // connetion error
+                            else {
+                                LOG__to_console_and_file('e', pageToCrawl, 'Error in establishing the connection for ' + base_url + ' | ' + 'response: ' + resp.statusCode);
+                            }
+                        }
+                    }); F
+                    //product_list.push(crawl__parse_emag(cheerio.load(body), product_type, base_url));
+                    break;
+                default:
+                    LOG__to_console_and_file('e', pageToCrawl, 'Error in config_' + pageToCrawl + '.jason file | 3');
+                    break;
+            }
+        } else
+            clearInterval(crawl__call_interval_pcgarage);
+    }, interval);
 }
 
 /**
@@ -218,10 +305,10 @@ function LOG__to_console_and_file(log_type, page, message) {
     //If the logger is not instantiated then a new one will be created
     if (logger === undefined) {
         // By default, only the Console transport is set on the default logger. 
-        logger = new(winston.Logger)({
+        logger = new (winston.Logger)({
             transports: [
-                new(winston.transports.Console)(),
-                new(winston.transports.File)({ filename: "crawler_main.log" })
+                new (winston.transports.Console)(),
+                new (winston.transports.File)({ filename: "crawler_main.log" })
             ]
         });
     }
@@ -246,21 +333,21 @@ function LOG__to_console_and_file(log_type, page, message) {
         case "i":
             logger.info(message);
             break;
-            /*case "d":
-                logger.debug(message);
-                break;*/
-            //I don't know the reason, but this doesn't work
-            /*case "v":
-                logger.verbose(message);
-                break;*/
-            //I don't know the reason, but this doesn't work
+        /*case "d":
+            logger.debug(message);
+            break;*/
+        //I don't know the reason, but this doesn't work
+        /*case "v":
+            logger.verbose(message);
+            break;*/
+        //I don't know the reason, but this doesn't work
         case "w":
             logger.warn(message);
             break;
-            /*case "s":
-                logger.silly(message);
-                break;*/
-            //I don't know the reason, but this doesn't work
+        /*case "s":
+            logger.silly(message);
+            break;*/
+        //I don't know the reason, but this doesn't work
         default:
             logger.error("Error in log function | Incorrect printing to the log file");
             break;
