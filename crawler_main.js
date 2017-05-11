@@ -1,6 +1,7 @@
 /* 
  * Project path: C:\Users\nyc-PC\Documents\GitHub\crawler
  * Run this file cmd: node crawler_main.js || node task_handler.js 
+ * DB - start mongodb >> mongod --dbpath E:\Projects\crawler_for_online_shops\database
  * 
  * @todo Read about https://www.npmjs.com/package/robotjs - is more like an autoclicker
  * @todo Read about https://2captcha.com/recaptchav2_eng_instruction - how to pass ReCaptcha V2
@@ -27,6 +28,10 @@ var config_pcgarage = require('./pages/config_pcgar.json'); //@todo to be rename
 var config_emag = require('./pages/config_emg.json'); //@todo to be renamed!
 // Global variable used for write into a file log - can be made local var in the future
 var logger;
+// The official MongoDB driver for Node.js
+var mongo = require('mongodb').MongoClient;
+// ?
+var http = require('http');
 
 //--------------------------------------------------------------
 // After the connection with a webpage is established we will download its bosy to this var
@@ -249,6 +254,17 @@ function crawl__parse_emag($, group_type, product_type, base_url) {
             return;
         }
     });
+
+    var db_emag = "mongodb://localhost:27017/crawl_emag_db";
+    mongo.connect(db_emag, function(err, db) {
+        if (err) throw err;
+        var query = { address: "Park Lane 38" };
+        db.collection("customers").find(query).toArray(function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            db.close();
+        });
+    });
 }
 
 /**
@@ -301,6 +317,17 @@ function crawl__parse_pcgarage($, group_type, prod_type, base_url) {
      *  Sort the products which will go to the database by defined criterias 
      * 
      * */
+    var db_pcgarage = "mongodb://localhost:27017/crawl_pcgarage_db";
+
+    mongo.connect(db_pcgarage, function(err, db) {
+        if (err) throw err;
+        var query = { product_type: "smartphone" };
+        db.collection("groups").find(query).toArray(function(err, result) {
+            if (err) throw err;
+            console.log('--- database: ' + result);
+            db.close();
+        });
+    });
     switch (price_l.group_type) {
         case 'gadget':
             crawl__check_with_database();
@@ -323,7 +350,7 @@ function crawl__parse_pcgarage($, group_type, prod_type, base_url) {
 }
 
 function crawl__check_with_database() {
-
+    //
 }
 
 /**
@@ -386,17 +413,29 @@ function LOG__to_console_and_file(log_type, page, message) {
 }
 
 function crawl__check_config_files() {
+    //Check for database
+    var db_emag = "mongodb://localhost:27017/crawl_emag_db";
+    var db_pcgarage = "mongodb://localhost:27017/crawl_pcgarage_db";
+    mongo.connect(db_emag, function(err, db) {
+        if (err) throw err;
+        console.log("Database created!");
+        db.close();
+    });
+    mongo.connect(db_pcgarage, function(err, db) {
+        if (err) throw err;
+        console.log("Database created!");
+        db.close();
+    });
+
     var return_check = false;
 
     // PC-garage
-    if (config_pcgarage !== undefined || config_pcgarage.name !== undefined || config_pcgarage.url !== undefined || config_pcgarage.groups !== undefined) {
+    if (config_pcgarage !== undefined || config_pcgarage.name !== undefined || config_pcgarage.groups !== undefined) {
         var i = 0;
         while (i < config_pcgarage.groups.length) {
             if (config_pcgarage.groups[i].product_type !== undefined ||
-                config_pcgarage.groups[i].name !== undefined ||
-                config_pcgarage.groups[i].url !== undefined ||
-                config_pcgarage.groups[i].first_page_format !== undefined ||
-                config_pcgarage.groups[i].second_page_format !== undefined) {
+                config_pcgarage.groups[i].group_type !== undefined ||
+                config_pcgarage.groups[i].url !== undefined) {
                 return_check = true;
             } else {
                 LOG__to_console_and_file('e', 'g', 'Error in config_pcgarage.jason file | 2');
@@ -411,14 +450,12 @@ function crawl__check_config_files() {
     }
 
     //Emag
-    if (config_emag !== undefined || config_emag.name !== undefined || config_emag.url !== undefined || config_emag.groups !== undefined) {
+    if (config_emag !== undefined || config_emag.name !== undefined || config_emag.groups !== undefined) {
         var i = 0;
         while (i < config_emag.groups.length) {
             if (config_emag.groups[i].product_type !== undefined ||
-                config_emag.groups[i].name !== undefined ||
-                config_emag.groups[i].url !== undefined ||
-                config_emag.groups[i].first_page_format !== undefined ||
-                config_emag.groups[i].second_page_format !== undefined)
+                config_emag.groups[i].group_type !== undefined ||
+                config_emag.groups[i].url !== undefined)
                 return_check &= true;
             else {
                 LOG__to_console_and_file('e', 'g', 'Error in config_emag.jason file | 2');

@@ -8,6 +8,8 @@
     "dependencies": {
         "cheerio": "latest",
         "request": "latest",
-        "winston": "latest"
+        "winston": "latest",
+        "mongodb": "latest",
+        "http": "latest"
     }
 }
