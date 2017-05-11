@@ -1,12 +1,5 @@
 {
     "name": "emag",
-    "url": "http://www.emag.ro",
-    "functions": "./hosts/emag/functions.js",
-    "filter": "/stoc",
-    "first_page_format": "/c",
-    "second_page_format_1": "/p",
-    "second_page_format_2": 2,
-    "second_page_format_3": "/c",
     "groups": [
         {
             "product_type": "Gadget",
