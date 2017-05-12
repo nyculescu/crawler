@@ -1,0 +1,18 @@
+{
+    "Database": {
+        "emag_table": {
+            "group_type": {
+                "product_type": {
+                    "product_link": "",
+                    "crawl": [
+                        {
+                            "price": "",
+                            "currency": "",
+                            "date_crawled": ""
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
